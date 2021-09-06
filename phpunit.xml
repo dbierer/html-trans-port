@@ -1,2 +1,6 @@
 <phpunit bootstrap="vendor/autoload.php">
+<php>
+  <const name="WPINC" value="./bedrock/web/wp/wp-includes"/>
+  <env name="WPINC" value="./bedrock/web/wp/wp-includes"/>
+</php>
 </phpunit>

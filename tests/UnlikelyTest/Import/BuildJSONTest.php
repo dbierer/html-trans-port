@@ -7,9 +7,9 @@ use Throwable;
 use UnexpectedValueException;
 use XmlWriter;
 use SimpleXMLElement;
-use WP_CLI\Unlikely\Import\{BuildWXR,Extract,BuildWXRInterface};
+use WP_CLI\Unlikely\Import\{BuildJSON,Extract,BuildJSONInterface};
 use PHPUnit\Framework\TestCase;
-class BuildWXRTest extends TestCase
+class BuildJSONTest extends TestCase
 {
     public $config = [];
     public $extract = NULL;
@@ -20,10 +20,10 @@ class BuildWXRTest extends TestCase
         $this->config = include __DIR__ . '/../../../src/config/config.php';
         $fn  = __DIR__ . '/../../../data/symptoms.html';
         $this->extract = new Extract($fn, $this->config);
-        $this->build   = new BuildWXR($this->config, $this->extract);
-        $this->mock_callback = new class () extends DateTime implements BuildWXRInterface {
+        $this->build   = new BuildJSON($this->config, $this->extract);
+        $this->mock_callback = new class () extends DateTime implements BuildJSONInterface {
             public $build = NULL;
-            public function setBuildWXRInstance(BuildWXR $build)
+            public function setBuildJSONInstance(BuildJSON $build)
             {
                 $this->build = $build;
             }
@@ -92,7 +92,7 @@ class BuildWXRTest extends TestCase
         $actual = ($after > $before);
         $this->assertEquals($expected, $actual, 'CallbackManager did not store object');
     }
-    public function testaddCallbackThrowsInvalidArgumentExceptionIfCallbackDoesntImplementBuildWXRInterface()
+    public function testaddCallbackThrowsInvalidArgumentExceptionIfCallbackDoesntImplementBuildJSONInterface()
     {
         try {
             $this->build->addCallback(new DateTime());
@@ -116,7 +116,7 @@ class BuildWXRTest extends TestCase
         $actual   = empty($result);
         $this->assertEquals($expected, $actual, 'getCallback() does not report empty if callback not registered');
     }
-    public function testBuildWXRStoresExtractInstance()
+    public function testBuildJSONStoresExtractInstance()
     {
         $expected = Extract::class;
         $obj = $this->build->getCallback(Extract::class);
@@ -280,41 +280,41 @@ class BuildWXRTest extends TestCase
         $actual = substr($article, $pos);
         $this->assertEquals($expected, $actual, 'addArticle() does not work on full document');
     }
-    public function testbuildWxrReturnsSimpleXMLElement()
+    public function testbuildJsonReturnsSimpleXMLElement()
     {
-        $wxr = $this->build->buildWxr('', TRUE);
+        $json = $this->build->buildJson('', TRUE);
         $expected = 'SimpleXMLElement';
-        $actual   = get_class($wxr);
-        $this->assertEquals($expected, $actual, 'buildWxr() does not create SimpleXMLElement instance');
+        $actual   = get_class($json);
+        $this->assertEquals($expected, $actual, 'buildJson() does not create SimpleXMLElement instance');
     }
-    public function testBuildWxrAddsRssNode()
+    public function testBuildJsonAddsRssNode()
     {
-        $wxr = $this->build->buildWxr('', TRUE);
+        $json = $this->build->buildJson('', TRUE);
         $expected = TRUE;
-        $actual   = strpos($wxr->asXML(), '</rss>');
-        $this->assertEquals($expected, $actual, 'buildWxr() does not create RSS node');
+        $actual   = strpos($json->asXML(), '</rss>');
+        $this->assertEquals($expected, $actual, 'buildJson() does not create RSS node');
     }
-    public function testBuildWxrAddsChannelNode()
+    public function testBuildJsonAddsChannelNode()
     {
-        $wxr = $this->build->buildWxr('', TRUE);
+        $json = $this->build->buildJson('', TRUE);
         $expected = TRUE;
-        $actual   = strpos($wxr->asXML(), '</channel>');
-        $this->assertEquals($expected, $actual, 'buildWxr() does not create "channel" node');
+        $actual   = strpos($json->asXML(), '</channel>');
+        $this->assertEquals($expected, $actual, 'buildJson() does not create "channel" node');
     }
-    public function testBuildWxrAddsItemNode()
+    public function testBuildJsonAddsItemNode()
     {
-        $wxr = $this->build->buildWxr();
+        $json = $this->build->buildJson();
         $expected = TRUE;
-        $actual   = strpos($wxr->asXML(), '</item>');
-        $this->assertEquals($expected, $actual, 'buildWxr() does not create "item" node');
+        $actual   = strpos($json->asXML(), '</item>');
+        $this->assertEquals($expected, $actual, 'buildJson() does not create "item" node');
     }
-    public function testBuildWxrWritesXMLFile()
+    public function testBuildJsonWritesXMLFile()
     {
         $fn = '/tmp/test.xml';
         if (file_exists($fn)) unlink($fn);
-        $wxr = $this->build->buildWxr($fn);
+        $json = $this->build->buildJson($fn);
         $expected = TRUE;
         $actual   = file_exists($fn);
-        $this->assertEquals($expected, $actual, 'buildWxr() did not write XML file');
+        $this->assertEquals($expected, $actual, 'buildJson() did not write XML file');
     }
 }

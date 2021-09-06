@@ -1,5 +1,5 @@
 {
-    "name": "wp-cli/html-trans-port",
+    "name": "dbierer/unlikely-html-trans-port",
     "type": "wp-cli-package",
     "description": "Transforms HTML, saves in JSON format, imports as posts into WordPress",
     "homepage": "https://github.com/dbierer/unlikely-html-trans-port",
@@ -14,10 +14,10 @@
     ],
     "require": {
         "php": ">=7.1",
-        "wp-cli/wp-cli": "^2.5"
+        "wp-cli/wp-cli": ">=2.5"
     },
     "require-dev": {
-        "wp-cli/wp-cli-tests": "^3.0.11"
+        "wp-cli/wp-cli-tests": ">=3.0"
     },
     "config": {
         "process-timeout": 7200,
@@ -25,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.x-dev"
+            "dev-main": "*"
         },
         "bundled": false,
         "commands": [

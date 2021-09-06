@@ -28,6 +28,7 @@ use ArrayObject;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use FilterIterator;
+use BadFunctionCallException;
 use WP_CLI;
 use WP_CLI_Command;
 
@@ -37,9 +38,10 @@ class HtmlTransPortCommand extends WP_CLI_Command
     public const ERROR_SINGLE   = 'single file not found';
     public const ERROR_SRC      = 'source directory path not found';
     public const ERROR_CONVERT  = 'conversion process error';
+    public const ERROR_WP_POST  = 'unable to locate "wp-includes/post.php". Check your WordPress installation.';
     public const SUCCESS_FILE   = 'Conversion successful! Out file name: %s';
     public const SYNOPSIS = [
-        'shortdesc' => 'Transforms standalone HTML files and imports them as WordPress posts',
+        'shortdesc' => 'Transforms standalone HTML files according to configuration file settings, saves as JSON file, and imports them as WordPress posts',
         'synopsis' => [
             [
                 'type'        => 'positional',
@@ -98,6 +100,8 @@ class HtmlTransPortCommand extends WP_CLI_Command
      */
     public function __invoke($args, $assoc_args)
     {
+        if (!function_exists('wp_insert_post'))
+            throw new BadFunctionCallException(static::ERROR_WP_POST);
         $container = $this->sanitizeParams($args, $assoc_args);
         if ($container->status === ArgsContainer::STATUS_ERR) {
             WP_CLI::error_multi_line($obj->getErrorMessages(), TRUE);

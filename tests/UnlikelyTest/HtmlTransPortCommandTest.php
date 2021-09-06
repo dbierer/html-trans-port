@@ -2,15 +2,15 @@
 namespace WP_CLI\UnlikelyTest;
 
 use ArrayObject;
-use WP_CLI\Unlikely\HtmlToWxrCommand;
+use WP_CLI\Unlikely\HtmlTransPortCommand;
 use PHPUnit\Framework\TestCase;
-class HtmlToWxrCommandTest extends TestCase
+class HtmlTransPortCommandTest extends TestCase
 {
     public $command = NULL;
     public $container = NULL;
     public function setUp() : void
     {
-        $this->command = new HtmlToWxrCommand();
+        $this->command = new HtmlTransPortCommand();
         $this->container = new ArrayObject();
         $this->container->offsetSet('src', __DIR__ . '/../../data');
         $this->container->offsetSet('dest', __DIR__ . '/../../data');

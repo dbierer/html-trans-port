@@ -10,160 +10,83 @@ use WP_CLI\Unlikely\Import\Transform\{
     TableToDiv
 };
 $config = [
-    // main config for WP export
-    'export' => [
-        'rss' => [
-            // RSS tag attribs
-            'version' => '2.0',
-            'xmlns' => [
-                'excerpt' => 'http://wordpress.org/export/1.2/excerpt/',
-                'content' => 'http://purl.org/rss/1.0/modules/content/',
-                'wfw' => 'http://wellformedweb.org/CommentAPI/',
-                'dc' => 'http://purl.org/dc/elements/1.1/',
-                'wp' => 'http://wordpress.org/export/1.2/',
-            ],
-        ],
-        'channel' => [
-            'wp:wxr_version' => '1.2',
-            'title' => 'website title',
-            'link' => 'https://website.com',
-            'description' => 'Website description',
-            'pubDate' => date(DATE_RSS),
-            'language' => 'en-US',
-            'wp:base_site_url' => 'https://website.com',
-            'wp:base_blog_url' => 'https://blog.website.com',
-            'wp:author' => [
-                'wp:author_id' => '1',
-                'wp:author_login' => ['CDATA' => 'author'],
-                'wp:author_email' => ['CDATA' => 'email@website.com'],
-                'wp:author_display_name' => ['CDATA' => 'Author'],
-                'wp:author_first_name' => ['CDATA' => 'Fred'],
-                'wp:author_last_name' => ['CDATA' => 'Flintstone'],
-            ],
-            'generator' => 'https://wordpress.org/?v=5.8',
-        ],
-    ],
-    'item' => [
-        'title' => [
-            'CDATA' =>
-                ['callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getTitle'
-                ]
-            ]
-        ],
-        'link' =>  [
-            'callback' => [
-                'class' => Extract::class,
-                'method' => 'getWpLink',
-                'args' => 'https://website.com'
-            ]
-        ],
-        'pubDate' => [
+    // callbacks used to produce post values
+    'post' => [
+        'ID' => 0,
+        'post_author' => 1,
+        'post_date' => [
             'callback' => [
                 'class' => Extract::class,
                 'method' => 'getCreateDate'
             ]
         ],
-        'dc:creator' => ['CDATA' => 'tom_wp'],
-        // 'guid isPermaLink="false"' => https://website.com/?p=1, guid' =>
-        'description' => [
+        'post_date_gmt' => [
+            'callback' => [
+                'class' => Extract::class,
+                'method' => 'getCreateDate',
+                'args' => 'UTC'
+            ]
+        ],
+        'post_content' => [
+            'callback' => [
+                'class' => Extract::class,
+                'method' => 'getHtml'
+                'args' => 'base64_encode',
+            ]
+        ],
+        'post_content_filtered' => [],
+        'post_title' => [
+            'callback' => [
+                'class' => Extract::class,
+                'method' => 'getTitle'
+            ],
+        ],
+        'post_excerpt' => [
             'callback' => [
                 'class' => Extract::class,
                 'method' => 'getExcerpt'
             ]
         ],
-        'content:encoded' =>  [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getHtml'
-                ]
-            ]
-        ],
-        'excerpt:encoded' => [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getExcerpt'
-                ]
-            ]
-        ],
-        'wp:post_id' => [
+        'post_status' => 'draft',
+        'post_type' => 'post',
+        'comment_status' => NULL,
+        'ping_status' => NULL,
+        'post_password' => NULL,
+        'post_name' => [
             'callback' => [
                 'class' => Extract::class,
-                'method' => 'getNextId'
+                'method' => 'getWpFilename',
             ]
         ],
-        'wp:post_date' => [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getCreateDate'
-                ]
+        'to_ping' => NULL,
+        'pinged' => NULL,
+        'post_modified' => [
+            'callback' => [
+                'class' => Extract::class,
+                'method' => 'getModifyDate'
             ]
         ],
-        'wp:post_date_gmt' => [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getCreateDate',
-                    'args' => 'UTC'
-                ]
+        'post_modified_gmt' => [
+            'callback' => [
+                'class' => Extract::class,
+                'method' => 'getModifyDate',
+                'args' => 'UTC'
             ]
         ],
-        'wp:post_modified' => [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getModifyDate'
-                ]
+        'post_parent' => 0,
+        'menu_order' => 0,
+        'post_mime_type' => NULL,
+        'guid' => NULL,
+        'import_id' => 0,
+        'post_category' => [
+            'callback' => [
+                'class' => Extract::class,
+                'method' => 'getLastDir'
             ]
         ],
-        'wp:post_modified_gmt' => [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getModifyDate',
-                    'args' => 'UTC'
-                ]
-            ]
-        ],
-        'wp:comment_status' => ['CDATA' => 'open'],
-        'wp:ping_status' => ['CDATA' => 'open'],
-        'wp:post_name' => [
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getWpFilename',
-                ]
-            ]
-        ],
-        'wp:status' => ['CDATA' => 'publish'],
-        'wp:post_parent' => 0,
-        'wp:menu_order' => 0,
-        'wp:post_type' => ['CDATA' => 'post'],
-        'wp:post_password' => ['CDATA' => ''],
-        'wp:is_sticky' => 0,
-        'category' => [
-            'attributes' => [
-                // category tag attributes
-                'domain' => 'category',
-                'nicename' => [
-                    'callback' => [
-                        'class' => Extract::class,
-                        'method' => 'getLastDir'
-                    ]
-                ],
-            ],
-            // category tag value
-            'CDATA' => [
-                'callback' => [
-                    'class' => Extract::class,
-                    'method' => 'getLastDir'
-                ]
-            ],
-        ],
+        'tags_input' => [],
+        'tax_input' => [],
+        'meta_input' => [],
     ],
     //**********************************************
     // main extraction

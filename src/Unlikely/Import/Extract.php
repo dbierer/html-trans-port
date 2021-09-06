@@ -32,7 +32,7 @@ use DateTime;
 use DateTimeZone;
 use SplFileObject;
 
-class Extract implements BuildWXRInterface
+class Extract implements BuildJSONInterface
 {
     public const DELIM_START  = '<body>';
     public const DELIM_STOP   = '</body>';
@@ -64,9 +64,9 @@ class Extract implements BuildWXRInterface
         $this->resetFile($fn);
     }
     /**
-     * Needed to maintain consistency with BuildWXRInterface
+     * Needed to maintain consistency with BuildJSONInterface
      */
-    public function setBuildWXRInstance(BuildWXR $build)
+    public function setBuildJSONInstance(BuildJSON $build)
     {
         /* do nothing */
     }
@@ -249,11 +249,12 @@ class Extract implements BuildWXRInterface
      * Extracts content between delimiters and returns clean HTML
      * NOTE: requires the "tidy" extension to be enabled
      *
+     * @param callable $encoding : name of encoding function (e.g. base64_encode)
      * @param ?array $err : error messages (passed by reference)
      * @return string $html : clean HTML; returns '' if unable to process content
      * @throws Exception :; if "transform" => "callback" value is not callable
      */
-    public function getHtml(?array &$err = [])
+    public function getHtml(callable $encoding = NULL, ?array &$err = [])
     {
         // init vars
         $html = '';
@@ -282,6 +283,8 @@ class Extract implements BuildWXRInterface
                 }
             }
         }
+        if (!empty($encoding))
+            $html = call_user_func($encoding, $html);
         return $html;
     }
 }

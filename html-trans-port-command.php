@@ -24,6 +24,11 @@ namespace WP_CLI\Unlikely;
  *
  */
 require __DIR__ . '/vendor/autoload.php';
+if (!defined('WPINC')) {
+    echo 'Unable to locate wp-includes/post.php';
+    return;
+}
+require WPINC . '/post.php';
 use WP_CLI;
 use WP_CLI\Unlikely\HtmlTransPortCommand;
 if ( ! class_exists( 'WP_CLI' ) ) {
