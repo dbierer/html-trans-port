@@ -1,0 +1,67 @@
+{
+    "name": "wp-cli/html-trans-port",
+    "type": "wp-cli-package",
+    "description": "Transforms HTML, saves in JSON format, imports as posts into WordPress",
+    "homepage": "https://github.com/dbierer/unlikely-html-trans-port",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Doug Bierer",
+            "email": "doug@unlikelysource.com",
+            "homepage": "https://unlikelysource.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "wp-cli/wp-cli": "^2.5"
+    },
+    "require-dev": {
+        "wp-cli/wp-cli-tests": "^3.0.11"
+    },
+    "config": {
+        "process-timeout": 7200,
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.x-dev"
+        },
+        "bundled": false,
+        "commands": [
+            "html-trans-port.php"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "WP_CLI\\Unlikely\\": "src/Unlikely/"
+        },
+        "files": [
+            "html-trans-port-command.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WP_CLI\\UnlikelyTest\\": "tests/UnlikelyTest/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "behat": "run-behat-tests",
+        "behat-rerun": "rerun-behat-tests",
+        "lint": "run-linter-tests",
+        "phpcs": "run-phpcs-tests",
+        "phpunit": "run-php-unit-tests",
+        "prepare-tests": "install-package-tests",
+        "test": [
+            "@lint",
+            "@phpcs",
+            "@phpunit",
+            "@behat"
+        ]
+    },
+    "support": {
+        "issues": "https://github.com/dbierer/unlikely-html-trans-port/issues"
+    }
+}
