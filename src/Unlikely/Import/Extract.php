@@ -32,7 +32,7 @@ use DateTime;
 use DateTimeZone;
 use SplFileObject;
 
-class Extract implements BuildJSONInterface
+class Extract implements BuildInterface
 {
     public const DELIM_START  = '<body>';
     public const DELIM_STOP   = '</body>';
@@ -64,9 +64,9 @@ class Extract implements BuildJSONInterface
         $this->resetFile($fn);
     }
     /**
-     * Needed to maintain consistency with BuildJSONInterface
+     * Needed to maintain consistency with BuildInterface
      */
-    public function setBuildJSONInstance(BuildJSON $build)
+    public function setBuildInstance(BuildBase $build)
     {
         /* do nothing */
     }

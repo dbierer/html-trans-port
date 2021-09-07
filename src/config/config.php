@@ -7,7 +7,8 @@ use WP_CLI\Unlikely\Import\Transform\{
     Clean,
     RemoveAttributes,
     RemoveBlock,
-    TableToDiv
+    TableToDiv,
+    Replace
 };
 $config = [
     // callbacks used to produce post values
@@ -24,13 +25,13 @@ $config = [
             'callback' => [
                 'class' => Extract::class,
                 'method' => 'getCreateDate',
-                'args' => 'UTC'
+                'args' => 'UTC',
             ]
         ],
         'post_content' => [
             'callback' => [
                 'class' => Extract::class,
-                'method' => 'getHtml'
+                'method' => 'getHtml',
                 'args' => 'base64_encode',
             ]
         ],
@@ -114,6 +115,10 @@ $config = [
             'attribs_remove' => [
                 'callback' => new RemoveAttributes(),
                 'params' => ['attributes' => Extract::DEFAULT_ATTR_LIST]
+            ],
+            'replace_dentalwellness' => [
+                'callback' => new Replace(),
+                'params' => ['search' => 'https://www.dentalwellness4u.com', 'replace' => '', 'case-sensitive' => FALSE]
             ],
         ],
     ],

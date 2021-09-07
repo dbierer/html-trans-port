@@ -30,7 +30,7 @@ class ExtractTest extends TestCase
         $expected = 'Exception';
         try {
             $extract = new Extract($fn, $this->config);
-            $actual = $extract->getHtml($err);
+            $actual = $extract->getHtml(NULL, $err);
             error_log(__METHOD__ . ':' . var_export($err, TRUE));
         } catch (Throwable $t) {
             $actual = get_class($t);
@@ -154,7 +154,7 @@ class ExtractTest extends TestCase
         $fn  = __DIR__ . '/../../../data/symptoms_missing_delim.html';
         $extract = new Extract($fn, $this->config);
         $expected = Extract::ERR_DELIM;
-        $html = $extract->getHtml($err);
+        $html = $extract->getHtml(NULL, $err);
         $actual = $err[0] ?? '';
         $this->assertEquals($expected, $actual, 'File not found error does not appear');
     }
@@ -164,7 +164,7 @@ class ExtractTest extends TestCase
         $fn  = __DIR__ . '/../../../data/symptoms.html';
         $extract = new Extract($fn, $this->config);
         $expected = FALSE;
-        $html = $extract->getHtml($err);
+        $html = $extract->getHtml(NULL, $err);
         $actual = strpos($html, 'width=');
         $this->assertEquals($expected, $actual, 'Width attribute not removed');
     }
@@ -174,7 +174,7 @@ class ExtractTest extends TestCase
         $fn  = __DIR__ . '/../../../data/symptoms.html';
         $extract = new Extract($fn, $this->config);
         $expected = FALSE;
-        $html = $extract->getHtml($err);
+        $html = $extract->getHtml(NULL, $err);
         $actual = strpos($html, '<tr height="20">');
         $this->assertEquals($expected, $actual, 'Block not removed properly');
     }
@@ -186,11 +186,21 @@ class ExtractTest extends TestCase
         $expected = 'Exception';
         try {
             $extract = new Extract($fn, $this->config);
-            $actual = $extract->getHtml($err);
+            $actual = $extract->getHtml(NULL, $err);
             error_log(__METHOD__ . ':' . var_export($err, TRUE));
         } catch (Throwable $t) {
             $actual = get_class($t);
         }
         $this->assertEquals($expected, $actual, 'Exception not thrown if transform callback is invalid ');
+    }
+    public function testGetHtmlEncodingCallbackWorks()
+    {
+        $err = [];
+        $fn  = __DIR__ . '/../../../data/symptoms.html';
+        $extract = new Extract($fn, $this->config);
+        $html = $extract->getHtml('base64_encode', $err);
+        $expected = FALSE;
+        $actual = stripos($html, '<!doctype HTML>');
+        $this->assertEquals($expected, $actual, 'Encoding does not work properly');
     }
 }

@@ -28,7 +28,7 @@ namespace WP_CLI\Unlikely\Import;
  *
  */
 
-interface BuildJSONInterface
+interface BuildInterface
 {
-    public function setBuildJSONInstance(BuildJSON $build);
+    public function setBuildInstance(BuildBase $build);
 }
