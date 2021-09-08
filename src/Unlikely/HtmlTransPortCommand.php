@@ -40,6 +40,7 @@ class HtmlTransPortCommand extends WP_CLI_Command
     public const ERROR_CONVERT  = 'conversion process error';
     public const ERROR_WP_POST  = 'unable to locate "wp-includes/post.php". Check your WordPress installation.';
     public const SUCCESS_FILE   = 'Conversion successful! Out file name: %s';
+    public const SUCCESS_PING   = 'We are alive and at line number: %d';
     public const SYNOPSIS = [
         'shortdesc' => 'Transforms standalone HTML files according to configuration file settings, saves as JSON file, and imports them as WordPress posts',
         'synopsis' => [
@@ -89,6 +90,14 @@ class HtmlTransPortCommand extends WP_CLI_Command
                 'default'     => 'FALSE',
                 //'options'     => [ 'success', 'error' ],
             ],
+            [
+                'type'        => 'assoc',
+                'name'        => 'ping',
+                'description' => 'Used for testing',
+                'optional'    => true,
+                'default'     => 0,
+                //'options'     => [ 'success', 'error' ],
+            ],
         ],
         'when' => 'after_wp_load',
         'longdesc' =>   '## EXAMPLES' . "\n\n" . 'wp html-trans-port /config/config.php --src=/httpdocs --ext=htm,html,phtml',
@@ -100,9 +109,16 @@ class HtmlTransPortCommand extends WP_CLI_Command
      */
     public function __invoke($args, $assoc_args)
     {
+        echo __METHOD__;
         if (!function_exists('wp_insert_post'))
             throw new BadFunctionCallException(static::ERROR_WP_POST);
         $container = $this->sanitizeParams($args, $assoc_args);
+        // ping test
+        if (!empty($contaer['ping'])) {
+            WP_CLI::line(sprintf(static::SUCCESS_PING, __LINE__));
+            return TRUE;
+        }
+        // check params
         if ($container->status === ArgsContainer::STATUS_ERR) {
             WP_CLI::error_multi_line($obj->getErrorMessages(), TRUE);
         }
@@ -233,6 +249,7 @@ class HtmlTransPortCommand extends WP_CLI_Command
         $src    = WP_CLI::line($assoc_args['src']) ?? \WP_CLI\Utils\get_home_dir();
         $single = WP_CLI::line($assoc_args['single']) ?? '';
         $ext    = WP_CLI::line($assoc_args['ext']) ?? 'html';
+        $ping   = WP_CLI::line($assoc_args['ping']) ?? 0;
         $only   = (!empty(WP_CLI::line($assoc_args['html-only']))) ? TRUE : FALSE;
         // sanitize $next_id param
         $container->offsetSet('next-id', (int) $next_id);

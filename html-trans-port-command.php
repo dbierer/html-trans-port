@@ -23,15 +23,11 @@ namespace WP_CLI\Unlikely;
  * MA 02110-1301, USA.
  *
  */
-require __DIR__ . '/vendor/autoload.php';
-if (!defined('WPINC')) {
-    echo 'Unable to locate wp-includes/post.php';
-    return;
-}
-require WPINC . '/post.php';
+require __DIR__ . '/class_loader.php';
 use WP_CLI;
 use WP_CLI\Unlikely\HtmlTransPortCommand;
 if ( ! class_exists( 'WP_CLI' ) ) {
+    echo "\nUnable to locate WP_CLI\n";
     return;
 }
 WP_CLI::add_command(
