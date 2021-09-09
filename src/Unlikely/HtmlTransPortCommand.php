@@ -109,7 +109,6 @@ class HtmlTransPortCommand extends WP_CLI_Command
      */
     public function __invoke($args, $assoc_args)
     {
-        echo __METHOD__;
         if (!function_exists('wp_insert_post'))
             throw new BadFunctionCallException(static::ERROR_WP_POST);
         $container = $this->sanitizeParams($args, $assoc_args);

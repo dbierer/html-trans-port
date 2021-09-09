@@ -3,7 +3,7 @@ unlikely/html-trans-port
 
 Transforms HTML, saves in JSON format, imports as posts into WordPress
 
-[![Build Status](https://travis-ci.org/unlikely/html-trans-port.svg?branch=master)](https://travis-ci.org/unlikely/html-trans-port)
+[![Build Status](https://travis-ci.org/unlikely/html-trans-port.svg?branch=main)](https://travis-ci.org/unlikely/html-trans-port)
 
 Quick links: [Using](#using) | [Installing](#installing) | [Contributing](#contributing) | [Support](#support)
 
