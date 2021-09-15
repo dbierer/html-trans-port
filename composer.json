@@ -16,17 +16,11 @@
         "php": ">=7.1",
         "wp-cli/wp-cli": ">=2.5"
     },
-    "require-dev": {
-        "wp-cli/wp-cli-tests": ">=3.0"
-    },
     "config": {
         "process-timeout": 7200,
         "sort-packages": true
     },
     "extra": {
-        "branch-alias": {
-            "dev-main": "*"
-        },
         "bundled": false,
         "commands": [
             "html-trans-port.php"
@@ -34,18 +28,14 @@
     },
     "autoload": {
         "psr-4": {
-            "WP_CLI\\Unlikely\\": "src/Unlikely/"
+            "WP_CLI\\Unlikely\\": "src/Unlikely/",
+            "WP_CLI\\UnlikelyTest\\": "tests/UnlikelyTest/"
         },
         "files": [
             "html-trans-port-command.php"
         ]
     },
-    "autoload-dev": {
-        "psr-4": {
-            "WP_CLI\\UnlikelyTest\\": "tests/UnlikelyTest/"
-        }
-    },
-    "minimum-stability": "dev",
+    "minimum-stability": "*",
     "prefer-stable": true,
     "scripts": {
         "behat": "run-behat-tests",
