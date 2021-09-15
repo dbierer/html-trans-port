@@ -4,7 +4,6 @@
     "description": "Transforms HTML, saves in JSON format, imports as posts into WordPress",
     "homepage": "https://github.com/dbierer/html-trans-port",
     "license": "MIT",
-    "version": "v0.1.0",
     "authors": [
         {
             "name": "Doug Bierer",
@@ -14,21 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "wp-cli/wp-cli": ">=2.5"
-    },
-    "config": {
-        "process-timeout": 7200,
-        "sort-packages": true
-    },
-    "extra": {
-        "bundled": false,
-        "branch-alias": {
-            "dev-main": "dev-master"
-        },
-        "commands": [
-            "html-trans-port.php"
-        ]
+        "php": ">=7.1"
     },
     "autoload": {
         "psr-4": {
@@ -38,24 +23,5 @@
         "files": [
             "html-trans-port-command.php"
         ]
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "scripts": {
-        "behat": "run-behat-tests",
-        "behat-rerun": "rerun-behat-tests",
-        "lint": "run-linter-tests",
-        "phpcs": "run-phpcs-tests",
-        "phpunit": "run-php-unit-tests",
-        "prepare-tests": "install-package-tests",
-        "test": [
-            "@lint",
-            "@phpcs",
-            "@phpunit",
-            "@behat"
-        ]
-    },
-    "support": {
-        "issues": "https://github.com/dbierer/html-trans-port/issues"
     }
 }
