@@ -35,7 +35,7 @@
             "html-trans-port-command.php"
         ]
     },
-    "minimum-stability": "*",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts": {
         "behat": "run-behat-tests",
