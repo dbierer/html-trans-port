@@ -2,7 +2,7 @@
     "name": "dbierer/html-trans-port",
     "type": "wp-cli-package",
     "description": "Transforms HTML, saves in JSON format, imports as posts into WordPress",
-    "homepage": "https://github.com/dbierer/unlikely-html-trans-port",
+    "homepage": "https://github.com/dbierer/html-trans-port",
     "license": "MIT",
     "authors": [
         {
@@ -62,6 +62,6 @@
         ]
     },
     "support": {
-        "issues": "https://github.com/dbierer/unlikely-html-trans-port/issues"
+        "issues": "https://github.com/dbierer/html-trans-port/issues"
     }
 }
