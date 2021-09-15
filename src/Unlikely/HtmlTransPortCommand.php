@@ -24,6 +24,10 @@ namespace WP_CLI\Unlikely;
  *
  */
 
+// https://codex.wordpress.org/Function_Reference
+// https://developer.wordpress.org/reference/functions/get_categories/
+// https://developer.wordpress.org/reference/functions/wp_insert_post/
+
 use ArrayObject;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
