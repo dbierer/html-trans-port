@@ -1,5 +1,5 @@
 {
-    "name": "dbierer/unlikely-html-trans-port",
+    "name": "dbierer/html-trans-port",
     "type": "wp-cli-package",
     "description": "Transforms HTML, saves in JSON format, imports as posts into WordPress",
     "homepage": "https://github.com/dbierer/unlikely-html-trans-port",
