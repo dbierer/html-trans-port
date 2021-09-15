@@ -1,4 +1,4 @@
-unlikely/html-trans-port
+dbierer/html-trans-port
 ========================
 
 Transforms HTML, saves in JSON format, imports as posts into WordPress
@@ -44,15 +44,6 @@ The `export::rss` key should only be updated when the JSON specification changes
 The `export::channel` key needs to be completed with the appropriate values
 * Leave the `export::channel::pubDate` key as-is
 * Only update the `export::channel::generator` key if a new version is available
-
-## Importing JSON Files
-To import, proceed as follows:
-* Open a terminal window/command prompt
-* Change to your main WordPress installation directory
-* Perform the import, where `PATH` is the path to the JSON files you created using this plugin
-```
-wp import PATH
-```
 
 ## Post Array Keys
 Here's an article that explains the requirements for `wp_insert_post`:
