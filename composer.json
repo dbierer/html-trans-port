@@ -23,6 +23,9 @@
     },
     "extra": {
         "bundled": false,
+        "branch-alias": {
+            "dev-master": "dev-main"
+        },
         "commands": [
             "html-trans-port.php"
         ]
