@@ -30,8 +30,9 @@ if ( ! class_exists( 'WP_CLI' ) ) {
     echo "\nUnable to locate WP_CLI\n";
     return;
 }
+
 WP_CLI::add_command(
     'html-trans-port',
     HtmlTransPortCommand::class,
-    HtmlTransPortCommand::SYNOPSIS
+    include __DIR__ . '/src/config/synopsis.php';
 );

@@ -43,69 +43,9 @@ class HtmlTransPortCommand extends WP_CLI_Command
     public const ERROR_SRC      = 'source directory path not found';
     public const ERROR_CONVERT  = 'conversion process error';
     public const ERROR_WP_POST  = 'unable to locate "wp-includes/post.php". Check your WordPress installation.';
+    public const ERROR_POST_ERR = 'problem with "wp_insert_post()';
     public const SUCCESS_FILE   = 'Conversion successful! Out file name: %s';
     public const SUCCESS_PING   = 'We are alive and at line number: %d';
-    public const SYNOPSIS = [
-        'shortdesc' => 'Transforms standalone HTML files according to configuration file settings, saves as JSON file, and imports them as WordPress posts',
-        'synopsis' => [
-            [
-                'type'        => 'positional',
-                'name'        => 'config',
-                'description' => 'Path to the configuration file',
-                'optional'    => false,
-                'repeating'   => false,
-            ],
-            [
-                'type'        => 'positional',
-                'name'        => 'dest',
-                'description' => 'Provide a directory path for JSON trans-port files',
-                'optional'    => false,
-                'repeating'   => false,
-            ],
-            [
-                'type'        => 'assoc',
-                'name'        => 'src',
-                'description' => 'Starting directory path indicates where to start tranforming',
-                'optional'    => true,
-                'default'     => 'current directory',
-                //'options'     => [ 'success', 'error' ],
-            ],
-            [
-                'type'        => 'assoc',
-                'name'        => 'single',
-                'description' => 'Single file to trans-port. If full path to file is not provided, prepends the value of "src" to "single".  See also: "html-only"',
-                'optional'    => true,
-                'default'     => 'NULL',
-                //'options'     => [ 'success', 'error' ],
-            ],
-            [
-                'type'        => 'assoc',
-                'name'        => 'ext',
-                'description' => 'Extension(s) other than "html" to convert.  If multiple extension, separate extensions with comma(s)',
-                'optional'    => true,
-                'default'     => 'html',
-                //'options'     => [ 'success', 'error' ],
-            ],
-            [
-                'type'        => 'assoc',
-                'name'        => 'no-import',
-                'description' => 'If set to "1", this flag causes no JSON file to be created: only the cleaned and sanitized extracted HTML; only works with the "single" option',
-                'optional'    => true,
-                'default'     => 'FALSE',
-                //'options'     => [ 'success', 'error' ],
-            ],
-            [
-                'type'        => 'assoc',
-                'name'        => 'ping',
-                'description' => 'Used for testing',
-                'optional'    => true,
-                'default'     => 0,
-                //'options'     => [ 'success', 'error' ],
-            ],
-        ],
-        'when' => 'after_wp_load',
-        'longdesc' =>   '## EXAMPLES' . "\n\n" . 'wp html-trans-port /config/config.php --src=/httpdocs --ext=htm,html,phtml',
-    ];
     public $container;
     /**
      * @param array $args       Indexed array of positional arguments.
@@ -116,14 +56,11 @@ class HtmlTransPortCommand extends WP_CLI_Command
         if (!function_exists('wp_insert_post'))
             throw new BadFunctionCallException(static::ERROR_WP_POST);
         $container = $this->sanitizeParams($args, $assoc_args);
-        // ping test
-        if (!empty($contaer['ping'])) {
-            WP_CLI::line(sprintf(static::SUCCESS_PING, __LINE__));
-            return TRUE;
-        }
+        WP_CLI::debug(var_dump($container));
         // check params
         if ($container->status === ArgsContainer::STATUS_ERR) {
-            WP_CLI::error_multi_line($obj->getErrorMessages(), TRUE);
+            WP_CLI::line($container->getErrorMessages());
+            WP_CLI::halt(1);
         }
         // if single, convert single file
         if (!empty($container['single'])) {
@@ -137,6 +74,7 @@ class HtmlTransPortCommand extends WP_CLI_Command
                 } else {
                     WP_CLI::line(self::ERROR_CONVERT);
                     WP_CLI::error_multi_line($err);
+                    WP_CLI::halt(1);
                 }
             } else {
                 $this->transPortSingle($extract, $container);
@@ -178,6 +116,7 @@ class HtmlTransPortCommand extends WP_CLI_Command
         if (empty($post)) {
             WP_CLI::line(self::ERROR_CONVERT);
             WP_CLI::error_multi_line($extract->err);
+            WP_CLI::halt(1);
         } else {
             $err = FALSE;
             try {
@@ -185,8 +124,11 @@ class HtmlTransPortCommand extends WP_CLI_Command
                 if (is_wp_error($err)) {
                     WP_CLI::error_multi_line($err->errors);
                     error_log(__METHOD__ . ':' . var_export($err->errors, TRUE));
+                    WP_CLI::line(static::ERROR_WP_POST);
+                    WP_CLI::halt(1);
                 } elseif ($result === 0) {
                     WP_CLI::line(self::ERROR_CONVERT);
+                    WP_CLI::halt(1);
                 } else  {
                     $success = TRUE;
                     WP_CLI::line(sprintf(self::SUCCESS_FILE, $fn));
@@ -194,6 +136,7 @@ class HtmlTransPortCommand extends WP_CLI_Command
             } catch (Throwable $t) {
                 error_log(__METHOD__ . ':' . get_class($t) . ':' . $t->getMessage());
                 WP_CLI::line(self::ERROR_CONVERT);
+                WP_CLI::halt(1);
             }
         }
         return $success;
@@ -238,8 +181,8 @@ class HtmlTransPortCommand extends WP_CLI_Command
     {
         // santize $config param
         $container = new ArgsContainer();
-        $config = WP_CLI::line($args[0]) ?? '';
-        $dest_dir = WP_CLI::line($args[1]) ?? '';
+        $config = $args[0] ?? '';
+        $dest_dir = $args[1] ?? '';
         if (empty($config) || empty($dest_dir) || !file_exists($config) || !file_exists($dest_dir)) {
             $container->addErrorMessage(self::ERROR_POS_ARGS);
             return $container;
@@ -248,16 +191,15 @@ class HtmlTransPortCommand extends WP_CLI_Command
             $container->offsetSet('dest', $dest_dir);
         }
         // grab optional params
-        $next_id= WP_CLI::line($assoc_args['next-id']) ?? 1;
-        $src    = WP_CLI::line($assoc_args['src']) ?? \WP_CLI\Utils\get_home_dir();
-        $single = WP_CLI::line($assoc_args['single']) ?? '';
-        $ext    = WP_CLI::line($assoc_args['ext']) ?? 'html';
-        $ping   = WP_CLI::line($assoc_args['ping']) ?? 0;
-        $only   = (!empty(WP_CLI::line($assoc_args['html-only']))) ? TRUE : FALSE;
+        $next_id= $assoc_args['next-id'] ?? 1;
+        $src    = $assoc_args['src']     ?? '';
+        $single = $assoc_args['single']  ?? '';
+        $ext    = $assoc_args['ext']     ?? 'html';
+        $only   = (!empty($assoc_args['html-only'])) ? TRUE : FALSE;
         // sanitize $next_id param
         $container->offsetSet('next-id', (int) $next_id);
         // sanitize $src param
-        if (!file_exists($src)) {
+        if (empty($src) || !file_exists($src)) {
             error_log(__METHOD__ . ':' . __LINE__ . ':' . self::ERROR_SRC . ':' . $src);
             $container->addErrorMessage(self::ERROR_SRC);
             return $container;
