@@ -34,5 +34,5 @@ if ( ! class_exists( 'WP_CLI' ) ) {
 WP_CLI::add_command(
     'html-trans-port',
     HtmlTransPortCommand::class,
-    include __DIR__ . '/src/config/synopsis.php';
+    include __DIR__ . '/src/config/synopsis.php'
 );

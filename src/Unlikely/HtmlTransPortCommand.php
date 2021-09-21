@@ -38,7 +38,7 @@ use WP_CLI_Command;
 
 class HtmlTransPortCommand extends WP_CLI_Command
 {
-    public const ERROR_POS_ARGS = 'path to config file and/or destination directory to write WXR files missing or invalid';
+    public const ERROR_POS_ARGS = 'path to config file, source or destination directories missing or invalid: %s';
     public const ERROR_SINGLE   = 'single file not found';
     public const ERROR_SRC      = 'source directory path not found';
     public const ERROR_CONVERT  = 'conversion process error';
@@ -56,7 +56,6 @@ class HtmlTransPortCommand extends WP_CLI_Command
         if (!function_exists('wp_insert_post'))
             throw new BadFunctionCallException(static::ERROR_WP_POST);
         $container = $this->sanitizeParams($args, $assoc_args);
-        WP_CLI::debug(var_dump($container));
         // check params
         if ($container->status === ArgsContainer::STATUS_ERR) {
             WP_CLI::line($container->getErrorMessages());
@@ -122,8 +121,8 @@ class HtmlTransPortCommand extends WP_CLI_Command
             try {
                 $result = wp_insert_post($post, $err);
                 if (is_wp_error($err)) {
-                    WP_CLI::error_multi_line($err->errors);
-                    error_log(__METHOD__ . ':' . var_export($err->errors, TRUE));
+                    WP_CLI::error_multi_line(var_export($err, TRUE));
+                    error_log(__METHOD__ . ':' . var_export($err, TRUE));
                     WP_CLI::line(static::ERROR_WP_POST);
                     WP_CLI::halt(1);
                 } elseif ($result === 0) {
@@ -181,31 +180,35 @@ class HtmlTransPortCommand extends WP_CLI_Command
     {
         // santize $config param
         $container = new ArgsContainer();
-        $config = $args[0] ?? '';
-        $dest_dir = $args[1] ?? '';
-        if (empty($config) || empty($dest_dir) || !file_exists($config) || !file_exists($dest_dir)) {
-            $container->addErrorMessage(self::ERROR_POS_ARGS);
-            return $container;
+        $src       = $args[2] ?? '';
+        $dest_dir  = $args[1] ?? '';
+        $config    = $args[0] ?? '';
+        // sanitize $src param
+        if (empty($src) || !file_exists($src) || !is_dir($src)) {
+            error_log(__METHOD__ . ':' . __LINE__ . ':' . self::ERROR_SRC . ':' . $src);
+            $container->addErrorMessage(sprintf(self::ERROR_POS_ARGS, $src));
         } else {
-            $container->offsetSet('config', require $config);
+            $container->offsetSet('src', $src);
+        }
+        // sanitize dest_dir param
+        if (empty($dest_dir) || !file_exists($dest_dir) || !is_dir($dest_dir)) {
+            $container->addErrorMessage(sprintf(self::ERROR_POS_ARGS, $dest_dir));
+        } else {
             $container->offsetSet('dest', $dest_dir);
         }
+        // sanitize config param
+        if (empty($config) || !file_exists($config)) {
+            $container->addErrorMessage(sprintf(self::ERROR_POS_ARGS, $config));
+        } else {
+            $container->offsetSet('config', require $config);
+        }
+        if ($container->status === ArgsContainer::STATUS_ERR) return $container;
         // grab optional params
-        $next_id= $assoc_args['next-id'] ?? 1;
-        $src    = $assoc_args['src']     ?? '';
         $single = $assoc_args['single']  ?? '';
         $ext    = $assoc_args['ext']     ?? 'html';
         $only   = (!empty($assoc_args['html-only'])) ? TRUE : FALSE;
         // sanitize $next_id param
         $container->offsetSet('next-id', (int) $next_id);
-        // sanitize $src param
-        if (empty($src) || !file_exists($src)) {
-            error_log(__METHOD__ . ':' . __LINE__ . ':' . self::ERROR_SRC . ':' . $src);
-            $container->addErrorMessage(self::ERROR_SRC);
-            return $container;
-        } else {
-            $container->offsetSet('src', $src);
-        }
         // sanitize $single param
         if (!empty($single)) {
             if ($single[0] !== DIRECTORY_SEPARATOR) {

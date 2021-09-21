@@ -4,10 +4,11 @@ return [
     'synopsis' => [
         [
             'type'        => 'positional',
-            'name'        => 'config',
-            'description' => 'Path to the configuration file',
-            'optional'    => false,
-            'repeating'   => false,
+            'name'        => 'src',
+            'description' => 'Starting directory path indicates where to start tranforming',
+            'optional'    => true,
+            'default'     => 'current directory',
+            //'options'     => [ 'success', 'error' ],
         ],
         [
             'type'        => 'positional',
@@ -17,12 +18,11 @@ return [
             'repeating'   => false,
         ],
         [
-            'type'        => 'assoc',
-            'name'        => 'src',
-            'description' => 'Starting directory path indicates where to start tranforming',
-            'optional'    => true,
-            'default'     => 'current directory',
-            //'options'     => [ 'success', 'error' ],
+            'type'        => 'positional',
+            'name'        => 'config',
+            'description' => 'Path to the configuration file',
+            'optional'    => false,
+            'repeating'   => false,
         ],
         [
             'type'        => 'assoc',
@@ -51,5 +51,5 @@ return [
     ],
     'when' => 'after_wp_load',
     'longdesc' => 'Available transformations include extracting HTML content between specified delimiters, clean and repair HTML using the Tidy extension, remove specified attributes, remove specified blocks, search and replace and converting TABLE tags to DIV class="row" and DIV class="col"'
-                  . '## EXAMPLES' . "\n\n" . 'wp html-trans-port /config/config.php --src=/httpdocs --ext=htm,html,phtml',
+                  . '## EXAMPLES' . "\n\Transforms and imports all htm,html and phtml files from 'httpdocs' and writes JSON contents to '/tmp' \n" . 'wp html-trans-port ./httpdocs /tmp ./config/config.php --ext=htm,html,phtml',
 ];
