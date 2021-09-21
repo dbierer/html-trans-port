@@ -39,6 +39,6 @@ class ArgsContainer extends ArrayObject
     }
     public function getErrorMessages()
     {
-        return implode("\n", $this->error_msg);
+        return 'ERROR: ' . implode("\n", $this->error_msg);
     }
 }
