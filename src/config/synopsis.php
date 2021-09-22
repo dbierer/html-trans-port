@@ -6,8 +6,8 @@ return [
             'type'        => 'positional',
             'name'        => 'src',
             'description' => 'Starting directory path indicates where to start tranforming',
-            'optional'    => true,
-            'default'     => 'current directory',
+            'optional'    => false,
+            'repeating'   => false,
             //'options'     => [ 'success', 'error' ],
         ],
         [
