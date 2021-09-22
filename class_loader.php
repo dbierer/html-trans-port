@@ -4,8 +4,10 @@ spl_autoload_register(function ($class) {
     if (strpos($class, $prefix) === 0) {
         $sep = DIRECTORY_SEPARATOR;
         // strip off "WP_CLI"
-        $name = substr($class, 7);
+        $name = substr($class, strlen($prefix));
         $fn = str_replace('\\', $sep, $name) . '.php';
-        require_once __DIR__ . $sep . $fn;
+        $fn = __DIR__ . $sep . 'src/Unlikely' . $sep . $fn;
+        $fn = str_replace($sep . $sep, $sep, $fn);
+        require_once $fn;
     }
 });

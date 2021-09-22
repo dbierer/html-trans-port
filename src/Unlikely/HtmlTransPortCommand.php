@@ -35,6 +35,7 @@ use FilterIterator;
 use BadFunctionCallException;
 use WP_CLI;
 use WP_CLI_Command;
+use WP_CLI\Unlikely\Import\{Extract,BuildJSON};
 
 class HtmlTransPortCommand extends WP_CLI_Command
 {
@@ -106,12 +107,12 @@ class HtmlTransPortCommand extends WP_CLI_Command
     {
         $success = FALSE;
         // build target path and FN
-        $fn = $extract->file_obj->getBasename($extract->file_obj->getExtension());
-        $dest = $container['dest'] . DIRECTORY_SEPARATOR . $fn . '.json';
+        $fn     = $extract->file_obj->getBasename($extract->file_obj->getExtension());
+        $dest   = $container['dest'] . DIRECTORY_SEPARATOR . $fn . '.json';
         $double = DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR;
-        $dest = str_replace($double, DIRECTORY_SEPARATOR, $dest);
-        $json = new BuildJSON($container['config'], $extract);
-        $post = $build->buildJSON($dest);
+        $dest   = str_replace($double, DIRECTORY_SEPARATOR, $dest);
+        $build  = new BuildJSON($container['config'], $extract);
+        $post   = $build->buildJSON($dest);
         if (empty($post)) {
             WP_CLI::line(self::ERROR_CONVERT);
             WP_CLI::error_multi_line($extract->err);
@@ -148,8 +149,8 @@ class HtmlTransPortCommand extends WP_CLI_Command
      */
     public function getDirIterator(ArrayObject $container) : iterable
     {
-        $src = $container['src'];   // path to start recursion
-        $ext = $container['ext'];   // array of extensions to include
+        $src  = $container['src'];   // path to start recursion
+        $ext  = $container['ext'];   // array of extensions to include
         $iter = new RecursiveDirectoryIterator($src);
         $iterPlus = new RecursiveIteratorIterator($iter);
         $filtIter = new class ($iterPlus, $ext) extends FilterIterator {
@@ -180,9 +181,9 @@ class HtmlTransPortCommand extends WP_CLI_Command
     {
         // santize $config param
         $container = new ArgsContainer();
-        $src       = $args[2] ?? '';
+        $src       = $args[0] ?? '';
         $dest_dir  = $args[1] ?? '';
-        $config    = $args[0] ?? '';
+        $config    = $args[2] ?? '';
         // sanitize $src param
         if (empty($src) || !file_exists($src) || !is_dir($src)) {
             error_log(__METHOD__ . ':' . __LINE__ . ':' . self::ERROR_SRC . ':' . $src);
